@@ -96,7 +96,7 @@
   { grade: 1, minScore: 0, maxScore: 0, percentage: '0%' },
   { grade: 2, minScore: 1, maxScore: 8, percentage: '1-8%' },
   { grade: 3, minScore: 9, maxScore: 16, percentage: '9-16%' },
-  { grade: 4, minScore: 17, maxScore: 24, percentage: '17-124%' },
+  { grade: 4, minScore: 17, maxScore: 24, percentage: '17-12%' },
   { grade: 5, minScore: 25, maxScore: 41, percentage: '25-41%' },
   { grade: 6, minScore: 42, maxScore: 57, percentage: '42-57%' },
   { grade: 7, minScore: 58, maxScore: 73, percentage: '58-73%' },
@@ -106,21 +106,32 @@
 ];
 function displayGrades() {
   const totalScore = parseFloat(document.getElementById('totalScore').value);
-  if (isNaN(totalScore)) {
-    alert('Te rog să introduci un număr valid pentru punctajul total.');
+  if (isNaN(totalScore) || totalScore <= 0) {
+    alert('Te rog să introduci un număr valid și mai mare decât 0 pentru punctajul total.');
     return;
   }
 
   const table = document.getElementById('gradesTable');
   table.innerHTML = '<tr><th>Nota</th><th>Interval Punctaj</th><th>Procentaj</th></tr>';
 
-  gradeBoundaries.forEach(boundary => {
-    const minScore = Math.ceil((boundary.minScore / 100) * totalScore);
-    const maxScore = Math.floor((boundary.maxScore / 100) * totalScore);
+  let previousMax = -1;
+
+  gradeBoundaries.forEach((boundary, index) => {
+    let minScore = index === 0 ? 0 : previousMax + 1;
+    let maxScore = Math.round((boundary.maxScore / 100) * totalScore);
+    
+    if (index === gradeBoundaries.length - 1 && maxScore < minScore) {
+      maxScore = minScore;
+    }
+
+    maxScore = maxScore > totalScore ? totalScore : maxScore;
+
     const row = table.insertRow();
     row.insertCell().textContent = boundary.grade;
     row.insertCell().textContent = `${minScore} - ${maxScore}`;
     row.insertCell().textContent = boundary.percentage;
+
+    previousMax = maxScore; 
   });
 }
 
