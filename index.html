@@ -1,183 +1,231 @@
 <!DOCTYPE html>
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Convertirea</title>
-  <link rel="icon" type="image/x-icon" href="g1.png">
+  <title>Convertirea Notelor</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f8f8;
-    padding: 20px;
-  }
-  .container {
-    max-width: 600px;
-    margin: auto;
-    background: #fff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    font-size: 23px;
-  }
-  label {
-    display: block;
-    color: #333;
-    margin-bottom: 5px;
-  }
-  input[type=text], input[type=number] {
-    width: calc(100% - 22px);
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box; 
-    font-size: 	18px;
-  }
-  h1{
-  	text-align: 	center;
-  }
-  button {
-    width: 100%;
-    padding: 10px;
-    background-color: #5cb85c;
-    border: none;
-    color: white;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 	18px;
-  }
-  button:hover {
-    background-color: #4cae4c;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 18px;
-  }
-  th, td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left;
-  }
-  th {
-    background-color: #f0f0f0;
-  }
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-</style>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f8f8;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      font-size: 23px;
+    }
+    label {
+      display: block;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    input[type=text], input[type=number] {
+      width: calc(100% - 22px);
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-sizing: border-box; 
+      font-size: 23px;
+    }
+    h1 {
+      text-align: center;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #5cb85c;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 23px;
+    }
+    button:hover {
+      background-color: #4cae4c;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
 </head>
 <body>
-	<h1>Barem de convertire a notelor, Liceul Teoretic "Lucian Blaga"</h1>
-<div class="container">
-    <label for="classInput">Clasa:</label>
-    <input type="text" id="classInput" placeholder="Exemplu: 10B">
+  <h1>Barem de convertire a notelor, Liceul Teoretic Lucian Blaga</h1>
+  <div class="container">
+      <label for="className">Clasa:</label>
+      <input type="text" id="className" placeholder="Exemplu: 10B">
 
-    <label for="subjectInput">Obiectul:</label>
-    <input type="text" id="subjectInput" placeholder="Exemplu: Matematică">
+      <label for="subjectName">Obiectul:</label>
+      <input type="text" id="subjectName" placeholder="Exemplu: Matematică">
 
-    <label for="totalScore">Punctajul:</label>
-    <input type="number" id="totalScore" placeholder="Exemplu: 100">
+      <label for="totalScore">Punctaj total posibil:</label>
+      <input type="number" id="totalScore" placeholder="Exemplu: 100">
 
-    <button onclick="displayGrades()">Afișează Notele și Intervalele</button>
-     <button onclick="downloadPDF()" style="background-color: #E52B50;">Descarcă ca PDF</button>
-     <button onclick="generateWord()" style="background-color:#337ab7;">Generează Baremul în Word</button>
- 
-    <table id="gradesTable">
-      
-    </table>
-</div>
+      <button onclick="displayGrades()">Afișează Notele și Intervalele</button>
+      <button onclick="downloadPDF()" style="background-color: #E52B50;">Descarcă ca PDF</button>
+      <button onclick="generateWord()" style="background-color:#337ab7;">Generează Baremul în Word</button>
 
-    <script>
-      
-        const gradeBoundaries = [
-  { grade: 1, minScore: 0, maxScore: 0, percentage: '0%' },
-  { grade: 2, minScore: 1, maxScore: 8, percentage: '1-8%' },
-  { grade: 3, minScore: 9, maxScore: 16, percentage: '9-16%' },
-  { grade: 4, minScore: 17, maxScore: 24, percentage: '17-12%' },
-  { grade: 5, minScore: 25, maxScore: 41, percentage: '25-41%' },
-  { grade: 6, minScore: 42, maxScore: 57, percentage: '42-57%' },
-  { grade: 7, minScore: 58, maxScore: 73, percentage: '58-73%' },
-  { grade: 8, minScore: 74, maxScore: 89, percentage: '74-89%' },
-  { grade: 9, minScore: 90, maxScore: 95, percentage: '90-95%' },
-  { grade: 10, minScore: 96, maxScore: 100, percentage: '96-100%'}
-];
-function displayGrades() {
-  const totalScore = parseFloat(document.getElementById('totalScore').value);
-  if (isNaN(totalScore) || totalScore <= 0) {
-    alert('Te rog să introduci un număr valid și mai mare decât 0 pentru punctajul total.');
-    return;
-  }
+      <table id="gradesTable"></table>
+  </div>
 
-  const table = document.getElementById('gradesTable');
-  table.innerHTML = '<tr><th>Nota</th><th>Interval Punctaj</th><th>Procentaj</th></tr>';
+  <script>
+    const gradeBoundaries = [
+      { grade: 1, minPercentage: 0, maxPercentage: 4 },
+      { grade: 2, minPercentage: 5, maxPercentage: 10 },
+      { grade: 3, minPercentage: 11, maxPercentage: 19 },
+      { grade: 4, minPercentage: 20, maxPercentage: 30 },
+      { grade: 5, minPercentage: 31, maxPercentage: 44 },
+      { grade: 6, minPercentage: 45, maxPercentage: 60 },
+      { grade: 7, minPercentage: 61, maxPercentage: 75 },
+      { grade: 8, minPercentage: 76, maxPercentage: 86 },
+      { grade: 9, minPercentage: 87, maxPercentage: 94 },
+      { grade: 10, minPercentage: 95, maxPercentage: 100 }
+    ];
 
-  let previousMax = -1;
+    function displayGrades() {
+      const totalScore = parseFloat(document.getElementById('totalScore').value);
 
-  gradeBoundaries.forEach((boundary, index) => {
-    let minScore = index === 0 ? 0 : previousMax + 1;
-    let maxScore = Math.round((boundary.maxScore / 100) * totalScore);
-    
-    if (index === gradeBoundaries.length - 1 && maxScore < minScore) {
-      maxScore = minScore;
+      if (isNaN(totalScore)) {
+        alert('Te rog să introduci un număr valid pentru punctajul total.');
+        return;
+      }
+
+      const table = document.getElementById('gradesTable');
+      table.innerHTML = `
+        <tr>
+          <th>Nota</th>
+          <th>Interval Punctaj</th>
+          <th>Procentaj (%)</th>
+        </tr>
+      `;
+
+      let lastMaxScore = 0; 
+
+      gradeBoundaries.forEach(boundary => {
+        const minScore = Math.round((boundary.minPercentage / 100) * totalScore);
+        const maxScore = Math.round((boundary.maxPercentage / 100) * totalScore);
+
+        const displayMinScore = lastMaxScore + 1;
+        lastMaxScore = maxScore;
+
+        const row = table.insertRow();
+        row.innerHTML = `
+          <td>${boundary.grade}</td>
+          <td>${displayMinScore} - ${maxScore}</td>
+          <td>${boundary.minPercentage}% - ${boundary.maxPercentage}%</td>
+        `;
+      });
     }
 
-    maxScore = maxScore > totalScore ? totalScore : maxScore;
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
-    const row = table.insertRow();
-    row.insertCell().textContent = boundary.grade;
-    row.insertCell().textContent = `${minScore} - ${maxScore}`;
-    row.insertCell().textContent = boundary.percentage;
+      const totalScore = document.getElementById('totalScore').value || 'Necompletat';
+      const className = document.getElementById('className').value || 'Necompletat';
+      const subjectName = document.getElementById('subjectName').value || 'Necompletat';
 
-    previousMax = maxScore; 
-  });
-}
+      // Setează titluri
+      doc.setFontSize(14);
+      doc.text(`Clasa: ${className}`, 10, 10);
+      doc.text(`Obiectul: ${subjectName}`, 10, 20);
+      doc.text(`Punctaj total posibil: ${totalScore}`, 10, 30);
 
-function downloadPDF() {
-  const classInfo = document.getElementById('classInput').value || 'Clasa necompletată';
-  const subjectInfo = document.getElementById('subjectInput').value || 'Obiectul necompletat';
-  const totalScore = parseFloat(document.getElementById('totalScore').value) || 100;
-  
-  const doc = new window.jspdf.jsPDF();
-  doc.text(`Clasa: ${classInfo}`, 10, 10);
-  doc.text(`Obiectul: ${subjectInfo}`, 10, 20);
-  doc.text(`Punctajul: ${totalScore}`, 10, 30);
+      const tableData = gradeBoundaries.map(boundary => {
+        const minScore = Math.round((boundary.minPercentage / 100) * totalScore);
+        const maxScore = Math.round((boundary.maxPercentage / 100) * totalScore);
+        return [boundary.grade, `${minScore} - ${maxScore}`, `${boundary.minPercentage}% - ${boundary.maxPercentage}%`];
+      });
 
-  doc.autoTable({
-    head: [['Nota', 'Interval Punctaj', 'Procentaj']],
-    body: gradeBoundaries.map(boundary => [
-      boundary.grade,
-      `${Math.ceil(boundary.minScore / 100 * totalScore)} - ${Math.floor(boundary.maxScore / 100 * totalScore)}`,
-      boundary.percentage
-    ]),
-    startY: 40
-  });
+      // Creează tabelul în PDF cu fundal albastru
+      doc.autoTable({
+        head: [['Nota', 'Interval Punctaj', 'Procentaj (%)']],
+        body: tableData,
+        startY: 40,
+        theme: 'grid',
+        headStyles: { fillColor: [0, 102, 204], textColor: [255, 255, 255] }, 
+        bodyStyles: { halign: 'center' },
+        styles: { fontSize: 10 }
+      });
 
-  doc.save('BaremulDeConversie.pdf');
-}
-function generateWord() {
+      // Salvează PDF
+      doc.save('Note-Intervale.pdf');
+    }
+
+
+    function generateWord() {
   const totalScoreInput = document.getElementById('totalScore').value;
-  const totalScore = totalScoreInput ? parseInt(totalScoreInput, 10) : 100; // Presupunem 100 dacă nu este introdusă o valoare.
+  const totalScore = totalScoreInput ? parseInt(totalScoreInput, 10) : 100; // Punctajul total poate fi introdus dinamic
 
-  const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='UTF-8'><style>table {border: solid #000 !important; border-width: 1px !important; border-collapse: collapse;} th, td {border: solid #000 !important; border-width: 1px !important; text-align: center; padding: 2px 5px;}</style></head><body>`;
+  const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' 
+                        xmlns:w='urn:schemas-microsoft-com:office:word' 
+                        xmlns='http://www.w3.org/TR/REC-html40'>
+                  <head>
+                    <meta charset='UTF-8'>
+                    <style>
+                      table {border: solid #000 !important; border-width: 1px !important; border-collapse: collapse;}
+                      th, td {border: solid #000 !important; border-width: 1px !important; text-align: center; padding: 2px 5px;}
+                    </style>
+                  </head>
+                  <body>`;
   const footer = `</body></html>`;
   const tableStart = `<table>`;
   const tableEnd = `</table>`;
 
   let tableContent = `<tr><th>Punctaj</th>`;
-  gradeBoundaries.forEach(boundary => {
-    const minScore = Math.ceil((boundary.minScore / 100) * totalScore);
-    const maxScore = Math.floor((boundary.maxScore / 100) * totalScore);
-    tableContent += `<td>${minScore} - ${maxScore}</td>`;
-  });
-  tableContent += `</tr>`;
-
   let tableContentSecondRow = `<tr><th>Nota</th>`;
+
+  const gradeBoundaries = [
+    { grade: 1, minPercentage: 0, maxPercentage: 4 },
+    { grade: 2, minPercentage: 5, maxPercentage: 10 },
+    { grade: 3, minPercentage: 11, maxPercentage: 19 },
+    { grade: 4, minPercentage: 20, maxPercentage: 30 },
+    { grade: 5, minPercentage: 31, maxPercentage: 44 },
+    { grade: 6, minPercentage: 45, maxPercentage: 60 },
+    { grade: 7, minPercentage: 61, maxPercentage: 75 },
+    { grade: 8, minPercentage: 76, maxPercentage: 86 },
+    { grade: 9, minPercentage: 87, maxPercentage: 94 },
+    { grade: 10, minPercentage: 95, maxPercentage: 100 }
+  ];
+
+  let lastMaxScore = 0;
+
   gradeBoundaries.forEach(boundary => {
+    const minScore = Math.round((boundary.minPercentage / 100) * totalScore);
+    const maxScore = Math.round((boundary.maxPercentage / 100) * totalScore);
+
+    // Calculăm și afișăm intervalul corect de punctaj
+    const displayMinScore = lastMaxScore + 1;
+    lastMaxScore = maxScore;
+
+    const scoreRange = `${displayMinScore} - ${maxScore}`;
+    
+    // Adăugăm celulele în tabel
+    tableContent += `<td>${scoreRange}</td>`;
     tableContentSecondRow += `<td>${boundary.grade}</td>`;
   });
+
+  tableContent += `</tr>`;
   tableContentSecondRow += `</tr>`;
 
   const wordOutput = header + tableStart + tableContent + tableContentSecondRow + tableEnd + footer;
@@ -187,6 +235,8 @@ function generateWord() {
 
   saveAs(blob, 'BaremulDeConversie.doc');
 }
-    </script>
+
+
+  </script>
 </body>
 </html>
